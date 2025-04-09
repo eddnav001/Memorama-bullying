@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memorama: Acoso Escolar y Ciberbullying</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #e3f2fd, #fffde7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      font-size: 24px;
+      color: #1e88e5;
+      margin-bottom: 10px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      gap: 10px;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      background: #bbdefb;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s;
+    }
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .card.revealed img {
+      display: block;
+    }
+    .card.matched {
+      background: #c8e6c9;
+      pointer-events: none;
+    }
+    .reflection {
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #4e342e;
+      text-align: center;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memorama: Acoso Escolar y Ciberbullying</h1>
+  <div class="board" id="board"></div>
+  <p class="reflection" id="reflection"></p>
+
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/02/audio_bf0b1cba98.mp3?filename=soft-ambient-111234.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const images = [
+      'https://i.imgur.com/zWqFgVZ.png',
+      'https://i.imgur.com/YDLPKQK.png',
+      'https://i.imgur.com/jHbyTKh.png',
+      'https://i.imgur.com/GV9K9Rx.png',
+      'https://i.imgur.com/8uF2UnX.png',
+      'https://i.imgur.com/N5FVCSf.png',
+      'https://i.imgur.com/2Uu1Acz.png',
+      'https://i.imgur.com/W3pU7Qm.png'
+    ];
+
+    const messages = [
+      "Tus palabras pueden herir o sanar.",
+      "No te calles. Habla con alguien de confianza.",
+      "Ciberbullying es violencia. Denúncialo.",
+      "Todos merecen respeto en la escuela.",
+      "No seas cómplice. Defiende a quien sufre bullying.",
+      "Ayudar es más valiente que agredir.",
+      "Rechaza la violencia, promueve la empatía.",
+      "El silencio también lastima. ¡Actúa!"
+    ];
+
+    const cards = [...images, ...images].sort(() => 0.5 - Math.random());
+    const board = document.getElementById("board");
+    const reflection = document.getElementById("reflection");
+
+    let firstCard = null;
+    let lock = false;
+    let matches = 0;
+
+    cards.forEach((src, index) => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.dataset.image = src;
+
+      const img = document.createElement("img");
+      img.src = src;
+      card.appendChild(img);
+      board.appendChild(card);
+
+      card.addEventListener("click", () => {
+        if (lock || card.classList.contains("matched") || card === firstCard) return;
+
+        card.classList.add("revealed");
+
+        if (!firstCard) {
+          firstCard = card;
+        } else {
+          lock = true;
+          if (firstCard.dataset.image === card.dataset.image) {
+            firstCard.classList.add("matched");
+            card.classList.add("matched");
+            showReflection();
+            matches++;
+            firstCard = null;
+            lock = false;
+          } else {
+            setTimeout(() => {
+              firstCard.classList.remove("revealed");
+              card.classList.remove("revealed");
+              firstCard = null;
+              lock = false;
+            }, 1000);
+          }
+        }
+      });
+    });
+
+    function showReflection() {
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      reflection.textContent = msg;
+    }
+  </script>
+</body>
+</html>
